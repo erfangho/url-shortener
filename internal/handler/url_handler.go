@@ -20,6 +20,17 @@ func NewURLHandler(service *service.URLService) *URLHandler {
 	}
 }
 
+// CreateURL godoc
+// @Summary Create a short URL
+// @Description Creates a shortened URL from a long URL
+// @Tags urls
+// @Accept json
+// @Produce json
+// @Param request body model.CreateURLRequest true "URL to shorten"
+// @Success 201 {object} model.URL
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /urls [post]
 func (h *URLHandler) CreateURL(c *gin.Context) {
 	var req model.CreateURLRequest
 
@@ -49,6 +60,15 @@ func (h *URLHandler) CreateURL(c *gin.Context) {
 	})
 }
 
+// GetURL godoc
+// @Summary Get URL info
+// @Description Get information about a shortened URL
+// @Tags urls
+// @Produce json
+// @Param shortCode path string true "Short code"
+// @Success 200 {object} model.URL
+// @Failure 404 {object} map[string]interface{}
+// @Router /urls/{shortCode} [get]
 func (h *URLHandler) GetURL(c *gin.Context) {
 	shortCode := c.Param("shortCode")
 
@@ -82,6 +102,14 @@ func (h *URLHandler) GetURL(c *gin.Context) {
 	})
 }
 
+// Redirect godoc
+// @Summary Redirect to original URL
+// @Description Redirects to the original URL and tracks the click
+// @Tags urls
+// @Param shortCode path string true "Short code"
+// @Success 301
+// @Failure 404 {object} map[string]interface{}
+// @Router /{shortCode} [get]
 func (h *URLHandler) Redirect(c *gin.Context) {
 	shortCode := c.Param("shortCode")
 

@@ -6,7 +6,7 @@ type URL struct {
 	gorm.Model
 
 	OriginalURL string `json:"original_url" gorm:"not null"`
-	ShortCode   string `json:"short_code" gorm:"unique;not null"`
+	ShortCode   string `json:"short_code" gorm:"uniqueIndex;not null"`
 	ClickCount  int    `json:"click_count" gorm:"default:0"`
 }
 
