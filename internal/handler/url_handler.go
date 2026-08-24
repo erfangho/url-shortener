@@ -3,6 +3,7 @@ package handler
 import (
 	"errors"
 	"net/http"
+	"strconv"
 
 	"github.com/erfangho/url-shortener/internal/model"
 	"github.com/erfangho/url-shortener/internal/service"
@@ -138,4 +139,54 @@ func (h *URLHandler) Redirect(c *gin.Context) {
 	}
 
 	c.Redirect(http.StatusMovedPermanently, result)
+}
+
+// GetAllURLs godoc
+// @Summary Get all URLs
+// @Description Get a paginated list of all shortened URLs
+// @Tags urls
+// @Produce json
+// @Param page query int false "Page number" default(1)
+// @Param per_page query int false "Items per page" default(20)
+// @Success 200 {object} model.GetAllURLsResponse
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /urls [get]
+func (h *URLHandler) GetAllURLs(c *gin.Context) {
+	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "invalid query parameter",
+		})
+		return
+	}
+
+	perPage, err := strconv.Atoi(c.DefaultQuery("per_page", "20"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "invalid query parameter",
+		})
+		return
+	}
+
+	urls, total, totalPages, err := h.service.GetAllURLs(page, perPage)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "server error",
+		})
+		return
+	}
+
+	response := model.GetAllURLsResponse{
+		URLs: urls,
+		Pagination: model.Pagination{
+			Page:       page,
+			PerPage:    perPage,
+			Total:      total,
+			TotalPages: totalPages,
+		},
+	}
+
+	c.JSON(http.StatusOK, response)
 }

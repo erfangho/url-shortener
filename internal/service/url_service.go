@@ -14,6 +14,7 @@ type URLRepositoryInterface interface {
 	FindByShortCode(shortCode string) (*model.URL, error)
 	FindByOriginalURL(originalUrl string) (*model.URL, error)
 	IncrementClickCount(shortCode string) error
+	FindAll(page, limit int) ([]model.URL, int64, error)
 }
 
 type URLService struct {
@@ -75,4 +76,24 @@ func (s *URLService) Redirect(shortCode string) (string, error) {
 	go s.repo.IncrementClickCount(shortCode)
 
 	return url.OriginalURL, nil
+}
+
+func (s *URLService) GetAllURLs(page, perPage int) ([]model.URL, int64, int, error) {
+	if page == 0 {
+		page = 1
+	}
+
+	if perPage > 100 {
+		perPage = 100
+	}
+
+	urls, total, err := s.repo.FindAll(page, perPage)
+
+	if err != nil {
+		return nil, 0, 0, err
+	}
+
+	totalPages := int((total + int64(perPage) - 1) / int64(perPage))
+
+	return urls, total, totalPages, nil
 }

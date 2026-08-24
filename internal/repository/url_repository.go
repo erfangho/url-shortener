@@ -52,3 +52,24 @@ func (r *URLRepository) IncrementClickCount(shortCode string) error {
 
 	return result.Error
 }
+
+func (r *URLRepository) FindAll(page, limit int) ([]model.URL, int64, error) {
+	offset := (page - 1) * limit
+
+	var urls []model.URL
+	var total int64
+
+	result := r.db.Order("created_at DESC").Offset(offset).Limit(limit).Find(&urls)
+
+	if result.Error != nil {
+		return nil, 0, result.Error
+	}
+
+	count := r.db.Model(&model.URL{}).Count(&total)
+
+	if count.Error != nil {
+		return nil, 0, count.Error
+	}
+
+	return urls, total, nil
+}
