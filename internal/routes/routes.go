@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterRoutes(router *gin.Engine, urlHandler *handler.URLHandler) {
+func RegisterRoutes(router *gin.Engine, urlHandler *handler.URLHandler, userHandler *handler.UserHandler) {
 	urlGroup := router.Group("/urls")
 	{
 		urlGroup.GET("", urlHandler.GetAllURLs)
@@ -14,4 +14,9 @@ func RegisterRoutes(router *gin.Engine, urlHandler *handler.URLHandler) {
 	}
 
 	router.GET("/:shortCode", urlHandler.Redirect)
+
+	userGroup := router.Group("/users")
+	{
+		userGroup.POST("", userHandler.CreateUser)
+	}
 }
