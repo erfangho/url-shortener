@@ -1,7 +1,9 @@
 package main
 
 import (
+	"log/slog"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/erfangho/url-shortener/internal/config"
@@ -23,6 +25,24 @@ import (
 // @host localhost:8080
 // @BasePath /
 func main() {
+	logFile, err := os.OpenFile(
+		"app.log",
+		os.O_CREATE|os.O_WRONLY|os.O_APPEND,
+		0666,
+	)
+
+	if err != nil {
+		panic(err)
+	}
+
+	defer logFile.Close()
+
+	logger := slog.New(
+		slog.NewTextHandler(logFile, nil),
+	)
+
+	slog.SetDefault(logger)
+
 	r := gin.Default()
 	db, err := config.InitDB()
 	urlCache := cache.NewCache(5 * time.Minute)

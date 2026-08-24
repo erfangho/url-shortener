@@ -1,6 +1,7 @@
 package cache
 
 import (
+	"log/slog"
 	"sync"
 	"time"
 )
@@ -35,6 +36,12 @@ func (c *Cache) Set(key string, value any) {
 		value:     value,
 		ExpiresAt: time.Now().Add(c.ttl),
 	}
+
+	slog.Info(
+		"url cached",
+		"key", key,
+		"expires_at", c.items[key].ExpiresAt,
+	)
 }
 
 func (c *Cache) Get(key string) (any, bool) {
@@ -51,6 +58,8 @@ func (c *Cache) Get(key string) (any, bool) {
 		delete(c.items, key)
 		return nil, false
 	}
+
+	slog.Info("url cache get", "key", key)
 
 	return cache.value, true
 }
