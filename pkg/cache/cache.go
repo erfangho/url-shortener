@@ -17,10 +17,14 @@ type Cache struct {
 }
 
 func NewCache(ttl time.Duration) *Cache {
-	return &Cache{
+	c := &Cache{
 		items: make(map[string]*cacheEntry),
 		ttl:   ttl,
 	}
+
+	go c.cleanup()
+
+	return c
 }
 
 func (c *Cache) Set(key string, value any) {
@@ -49,4 +53,19 @@ func (c *Cache) Get(key string) (any, bool) {
 	}
 
 	return cache.value, true
+}
+
+func (c *Cache) cleanup() {
+	ticker := time.NewTicker(1 * time.Minute)
+	defer ticker.Stop()
+
+	for range ticker.C {
+		c.mu.Lock()
+		for key, value := range c.items {
+			if value.ExpiresAt.Before(time.Now()) {
+				delete(c.items, key)
+			}
+		}
+		c.mu.Unlock()
+	}
 }
