@@ -2,12 +2,14 @@ package main
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/erfangho/url-shortener/internal/config"
 	"github.com/erfangho/url-shortener/internal/handler"
 	"github.com/erfangho/url-shortener/internal/repository"
 	"github.com/erfangho/url-shortener/internal/routes"
 	"github.com/erfangho/url-shortener/internal/service"
+	"github.com/erfangho/url-shortener/pkg/cache"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -23,12 +25,13 @@ import (
 func main() {
 	r := gin.Default()
 	db, err := config.InitDB()
+	urlCache := cache.NewCache(5 * time.Minute)
 
 	if err != nil {
 		panic(err)
 	}
 
-	urlRepo := repository.NewURLRepository(db)
+	urlRepo := repository.NewURLRepository(db, urlCache)
 	urlService := service.NewURLService(urlRepo)
 	urlHandler := handler.NewURLHandler(urlService)
 

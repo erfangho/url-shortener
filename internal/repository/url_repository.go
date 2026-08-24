@@ -1,17 +1,22 @@
 package repository
 
 import (
+	"errors"
+
 	"github.com/erfangho/url-shortener/internal/model"
+	"github.com/erfangho/url-shortener/pkg/cache"
 	"gorm.io/gorm"
 )
 
 type URLRepository struct {
-	db *gorm.DB
+	db    *gorm.DB
+	cache *cache.Cache
 }
 
-func NewURLRepository(db *gorm.DB) *URLRepository {
+func NewURLRepository(db *gorm.DB, cache *cache.Cache) *URLRepository {
 	return &URLRepository{
-		db: db,
+		db:    db,
+		cache: cache,
 	}
 }
 
@@ -22,6 +27,18 @@ func (r *URLRepository) Create(url *model.URL) error {
 }
 
 func (r *URLRepository) FindByShortCode(shortCode string) (*model.URL, error) {
+	cacheValue, exists := r.cache.Get(shortCode)
+
+	if exists {
+		url, ok := cacheValue.(*model.URL)
+
+		if !ok {
+			return nil, errors.New("cache reterive failed")
+		}
+
+		return url, nil
+	}
+
 	var url model.URL
 
 	result := r.db.First(&url, "short_code = ?", shortCode)
@@ -29,6 +46,8 @@ func (r *URLRepository) FindByShortCode(shortCode string) (*model.URL, error) {
 	if result.Error != nil {
 		return nil, result.Error
 	}
+
+	r.cache.Set(shortCode, &url)
 
 	return &url, nil
 }
