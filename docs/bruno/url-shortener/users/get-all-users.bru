@@ -1,0 +1,45 @@
+meta {
+  name: Get All Users
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/users?page=1&per_page=10
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("Status should be 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  })
+  
+  test("Response should have data array", function() {
+    expect(res.body.data).to.be.an("array");
+  })
+  
+  test("Response should have pagination object", function() {
+    expect(res.body.pagination).to.be.an("object");
+  })
+  
+  test("Pagination should have page", function() {
+    expect(res.body.pagination.page).to.be.a("number");
+  })
+  
+  test("Pagination should have per_page", function() {
+    expect(res.body.pagination.per_page).to.be.a("number");
+  })
+  
+  test("Pagination should have total", function() {
+    expect(res.body.pagination.total).to.be.a("number");
+  })
+  
+  test("Pagination should have total_pages", function() {
+    expect(res.body.pagination.total_pages).to.be.a("number");
+  })
+}

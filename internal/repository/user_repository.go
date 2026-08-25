@@ -32,3 +32,24 @@ func (r *UserRepository) FindByUserName(username string) (*model.User, error) {
 
 	return user, nil
 }
+
+func (r *UserRepository) FindAll(page, limit int) ([]model.User, int64, error) {
+	offset := (page - 1) * limit
+
+	var users []model.User
+	var total int64
+
+	result := r.db.Order("created_at DESC").Offset(offset).Limit(limit).Find(&users)
+
+	if result.Error != nil {
+		return nil, 0, result.Error
+	}
+
+	count := r.db.Model(&model.User{}).Count(&total)
+
+	if count.Error != nil {
+		return nil, 0, count.Error
+	}
+
+	return users, total, nil
+}

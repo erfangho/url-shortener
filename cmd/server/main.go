@@ -47,6 +47,11 @@ func main() {
 
 	godotenv.Load()
 
+	redisClient, err := config.NewRedisClient()
+	if err != nil {
+		panic(err)
+	}
+
 	r := gin.Default()
 	db, err := config.InitDB()
 	urlCache := cache.NewCache(5 * time.Minute)
@@ -64,7 +69,8 @@ func main() {
 	authMiddleware := middleware.NewAuthMiddleware(authService)
 
 	userRepo := repository.NewUserRepository(db)
-	userService := service.NewUserService(userRepo)
+	redisCache := cache.NewRedisCache(redisClient, 5*time.Minute)
+	userService := service.NewUserService(userRepo, redisCache)
 	userHandler := handler.NewUserHandler(userService, authService)
 
 	authHandler := handler.NewAuthHandler(authService, userService)
