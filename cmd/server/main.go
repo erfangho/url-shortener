@@ -8,11 +8,13 @@ import (
 
 	"github.com/erfangho/url-shortener/internal/config"
 	"github.com/erfangho/url-shortener/internal/handler"
+	"github.com/erfangho/url-shortener/internal/middleware"
 	"github.com/erfangho/url-shortener/internal/repository"
 	"github.com/erfangho/url-shortener/internal/routes"
 	"github.com/erfangho/url-shortener/internal/service"
 	"github.com/erfangho/url-shortener/pkg/cache"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
@@ -43,6 +45,8 @@ func main() {
 
 	slog.SetDefault(logger)
 
+	godotenv.Load()
+
 	r := gin.Default()
 	db, err := config.InitDB()
 	urlCache := cache.NewCache(5 * time.Minute)
@@ -55,11 +59,15 @@ func main() {
 	urlService := service.NewURLService(urlRepo)
 	urlHandler := handler.NewURLHandler(urlService)
 
+	jwtConfig := &config.JWT{}
+	authService := service.NewAuthService(jwtConfig)
+	authMiddleware := middleware.NewAuthMiddleware(authService)
+
 	userRepo := repository.NewUserRepository(db)
 	userService := service.NewUserService(userRepo)
-	userHandler := handler.NewUserHandler(userService)
+	userHandler := handler.NewUserHandler(userService, authService)
 
-	routes.RegisterRoutes(r, urlHandler, userHandler)
+	routes.RegisterRoutes(r, urlHandler, userHandler, authMiddleware)
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 

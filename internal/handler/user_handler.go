@@ -11,12 +11,14 @@ import (
 )
 
 type UserHandler struct {
-	service *service.UserService
+	service     *service.UserService
+	authService *service.AuthService
 }
 
-func NewUserHandler(service *service.UserService) *UserHandler {
+func NewUserHandler(service *service.UserService, authService *service.AuthService) *UserHandler {
 	return &UserHandler{
-		service: service,
+		service:     service,
+		authService: authService,
 	}
 }
 
@@ -57,8 +59,19 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 		return
 	}
 
+	token, err := h.authService.GenerateToken(result.ID, result.Username)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "server error",
+			"error":   err.Error(),
+		})
+		return
+	}
+
 	c.JSON(http.StatusCreated, gin.H{
 		"message": "success",
 		"data":    result,
+		"token":   token,
 	})
 }

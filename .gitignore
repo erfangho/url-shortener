@@ -38,3 +38,5 @@ docs/
 # Build output
 dist/
 build/
+
+*.log
