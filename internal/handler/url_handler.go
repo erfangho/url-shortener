@@ -110,7 +110,7 @@ func (h *URLHandler) GetURL(c *gin.Context) {
 // @Param shortCode path string true "Short code"
 // @Success 301
 // @Failure 404 {object} map[string]interface{}
-// @Router /{shortCode} [get]
+// @Router /u/{shortCode} [get]
 func (h *URLHandler) Redirect(c *gin.Context) {
 	shortCode := c.Param("shortCode")
 

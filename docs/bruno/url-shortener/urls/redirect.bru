@@ -5,16 +5,22 @@ meta {
 }
 
 get {
-  url: {{baseUrl}}/{{shortCode}}
+  url: {{baseUrl}}/u/:shortcode
+  body: none
   auth: none
 }
 
-settings {
-  redirectFollow: false
+params:path {
+  shortcode: e086ee
 }
 
 tests {
   test("Status should be 301", function() {
     expect(res.getStatus()).to.equal(301);
   })
+}
+
+settings {
+  encodeUrl: false
+  timeout: 0
 }

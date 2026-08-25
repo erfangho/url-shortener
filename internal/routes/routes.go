@@ -21,7 +21,7 @@ func RegisterRoutes(
 		urlGroup.POST("", urlHandler.CreateURL)
 		urlGroup.GET("/:shortCode", urlHandler.GetURL)
 	}
-	router.GET("/:shortCode", urlHandler.Redirect)
+	router.GET("/u/:shortCode", urlHandler.Redirect)
 
 	userGroup := router.Group("/users")
 	{
