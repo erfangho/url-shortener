@@ -26,5 +26,6 @@ func RegisterRoutes(
 	userGroup := router.Group("/users")
 	{
 		userGroup.POST("", userHandler.CreateUser)
+		userGroup.GET("", authMiddleware.AuthMiddleware(), userHandler.GetAllUsers)
 	}
 }
