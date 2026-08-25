@@ -67,7 +67,9 @@ func main() {
 	userService := service.NewUserService(userRepo)
 	userHandler := handler.NewUserHandler(userService, authService)
 
-	routes.RegisterRoutes(r, urlHandler, userHandler, authMiddleware)
+	authHandler := handler.NewAuthHandler(authService, userService)
+
+	routes.RegisterRoutes(r, urlHandler, userHandler, authHandler, authMiddleware)
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 

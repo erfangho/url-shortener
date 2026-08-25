@@ -1,0 +1,35 @@
+meta {
+  name: Register User
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/users
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "John Doe",
+    "username": "johndoe",
+    "password": "password123"
+  }
+}
+
+script:post-response {
+  if (res.getStatus() === 201) {
+    bru.setVar("token", res.body.token);
+  }
+}
+
+tests {
+  test("Status should be 201", function() {
+    expect(res.getStatus()).to.equal(201);
+  })
+  
+  test("Response should have token", function() {
+    expect(res.body.token).to.be.a("string");
+  })
+}

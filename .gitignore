@@ -33,7 +33,9 @@ Thumbs.db
 *.db
 
 # Generated docs
-docs/
+docs/docs.go
+docs/swagger.json
+docs/swagger.yaml
 
 # Build output
 dist/

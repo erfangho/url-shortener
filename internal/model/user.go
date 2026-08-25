@@ -15,3 +15,8 @@ type CreateUserRequest struct {
 	Username string `json:"username" binding:"required,min=6,max=10"`
 	Password string `json:"password" binding:"required,min=8,max=12"`
 }
+
+type LoginRequest struct {
+	Username string `json:"username" binding:"required"`
+	Password string `json:"password" binding:"required"`
+}

@@ -1,9 +1,0 @@
-time=2026-08-24T23:59:16.899+03:30 level=INFO msg="url cached" key=dad480 expires_at=2026-08-25T00:04:16.899+03:30
-time=2026-08-24T23:59:27.037+03:30 level=INFO msg="url cache get" key=dad480
-time=2026-08-24T23:59:34.658+03:30 level=INFO msg="url cache get" key=dad480
-time=2026-08-24T23:59:35.110+03:30 level=INFO msg="url cache get" key=dad480
-time=2026-08-24T23:59:35.614+03:30 level=INFO msg="url cache get" key=dad480
-time=2026-08-24T23:59:36.067+03:30 level=INFO msg="url cache get" key=dad480
-time=2026-08-24T23:59:36.537+03:30 level=INFO msg="url cache get" key=dad480
-time=2026-08-24T23:59:36.982+03:30 level=INFO msg="url cache get" key=dad480
-time=2026-08-25T12:33:05.132+03:30 level=ERROR msg="token validate error" error="token is malformed: could not base64 decode header: illegal base64 data at input byte 36"

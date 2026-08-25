@@ -1,0 +1,30 @@
+meta {
+  name: Get All URLs
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/urls?page=1&per_page=20
+  body: none
+  auth: bearer
+}
+
+params:query {
+  page: 1
+  per_page: 20
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("Status should be 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  })
+  
+  test("Response should have pagination", function() {
+    expect(res.body.pagination).to.be.an("object");
+  })
+}

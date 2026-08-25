@@ -6,14 +6,21 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterRoutes(router *gin.Engine, urlHandler *handler.URLHandler, userHandler *handler.UserHandler, authMiddleware *middleware.AuthMiddleware) {
+func RegisterRoutes(
+	router *gin.Engine,
+	urlHandler *handler.URLHandler,
+	userHandler *handler.UserHandler,
+	authHandler *handler.AuthHandler,
+	authMiddleware *middleware.AuthMiddleware,
+) {
+	router.POST("/login", authHandler.Login)
+
 	urlGroup := router.Group("/urls")
 	{
 		urlGroup.GET("", authMiddleware.AuthMiddleware(), urlHandler.GetAllURLs)
 		urlGroup.POST("", urlHandler.CreateURL)
 		urlGroup.GET("/:shortCode", urlHandler.GetURL)
 	}
-
 	router.GET("/:shortCode", urlHandler.Redirect)
 
 	userGroup := router.Group("/users")

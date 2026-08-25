@@ -1,0 +1,20 @@
+meta {
+  name: Redirect to Original URL
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/{{shortCode}}
+  auth: none
+}
+
+settings {
+  redirectFollow: false
+}
+
+tests {
+  test("Status should be 301", function() {
+    expect(res.getStatus()).to.equal(301);
+  })
+}

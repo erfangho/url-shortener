@@ -1,0 +1,31 @@
+meta {
+  name: Create URL
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/urls
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "url": "https://example.com/very-long-url-that-needs-shortening"
+  }
+}
+
+tests {
+  test("Status should be 201", function() {
+    expect(res.getStatus()).to.equal(201);
+  })
+  
+  test("Response should have message", function() {
+    expect(res.body.message).to.equal("success");
+  })
+  
+  test("Response should have data", function() {
+    expect(res.body.data).to.be.an("object");
+  })
+}

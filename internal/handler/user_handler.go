@@ -22,6 +22,17 @@ func NewUserHandler(service *service.UserService, authService *service.AuthServi
 	}
 }
 
+// CreateUser godoc
+// @Summary Register a new user
+// @Description Create a new user account and return a JWT token
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param request body model.CreateUserRequest true "User registration data"
+// @Success 201 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /users [post]
 func (h *UserHandler) CreateUser(c *gin.Context) {
 	var req model.CreateUserRequest
 
