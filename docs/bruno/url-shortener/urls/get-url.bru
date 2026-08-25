@@ -5,8 +5,13 @@ meta {
 }
 
 get {
-  url: {{baseUrl}}/urls/{{shortCode}}
+  url: {{baseUrl}}/urls/:shortCode
+  body: none
   auth: none
+}
+
+params:path {
+  shortCode: e086ee
 }
 
 tests {
