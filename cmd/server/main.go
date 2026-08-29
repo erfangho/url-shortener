@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/erfangho/url-shortener/internal/config"
+	grpcclient "github.com/erfangho/url-shortener/internal/grpc"
 	"github.com/erfangho/url-shortener/internal/handler"
 	"github.com/erfangho/url-shortener/internal/middleware"
 	"github.com/erfangho/url-shortener/internal/repository"
@@ -53,6 +54,14 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	analyticsClient, err := grpcclient.NewAnalyticsClient("localhost:50051")
+
+	if err != nil {
+		slog.Error("failed to connect to analytics server", "error", err)
+	}
+
+	defer analyticsClient.Close()
 
 	r := gin.Default()
 	db, err := config.InitDB()

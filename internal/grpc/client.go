@@ -31,3 +31,7 @@ func (c *AnalyticsClient) RecordClick(ctx context.Context, event *pb.ClickEvent)
 
 	return err
 }
+
+func (c *AnalyticsClient) Close() {
+	c.conn.Close()
+}
