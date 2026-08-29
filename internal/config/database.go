@@ -2,7 +2,7 @@ package config
 
 import (
 	"github.com/erfangho/url-shortener/internal/model"
-	"gorm.io/driver/sqlite"
+	"github.com/glebarez/sqlite"
 	"gorm.io/gorm"
 )
 
