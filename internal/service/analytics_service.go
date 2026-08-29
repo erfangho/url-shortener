@@ -1,6 +1,7 @@
 package service
 
 import (
+	"log/slog"
 	"sync"
 
 	"github.com/erfangho/url-shortener/internal/model"
@@ -32,5 +33,40 @@ func NewAnalyticsService(urlRepo URLClickRepositoryInterface, bufferSize int, wo
 }
 
 func (s *AnalyticsService) worker() {
+	defer s.wg.Done()
 
+	batch := []model.ClickEvent{}
+
+	for {
+		event, ok := <-s.eventChan
+
+		if !ok {
+			s.flush(batch)
+			return
+		}
+
+		batch = append(batch, event)
+
+		if len(batch) >= 10 {
+			s.flush(batch)
+			batch = []model.ClickEvent{}
+		}
+	}
+}
+
+func (s *AnalyticsService) Publish(event model.ClickEvent) {
+	s.eventChan <- event
+}
+
+func (s *AnalyticsService) flush(events []model.ClickEvent) {
+	if len(events) == 0 {
+		return
+	}
+
+	err := s.urlRepo.SaveClickEventsBatch(events)
+
+	if err != nil {
+		slog.Error(err.Error())
+	}
+	return
 }
