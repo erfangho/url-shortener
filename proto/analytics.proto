@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package analytics;
+
+option go_package = "github.com/erfangho/url-shortener/proto;analyticspb";
+
+message ClickEvent {
+  uint32 url_id = 1;
+  string user_agent = 2;
+  string ip_address = 3;
+}
+
+message RecordResponse {
+  bool success = 1;
+  string message =2;
+}
+
+service AnalyticsService {
+  rpc RecordClick(ClickEvent) returns (RecordResponse);
+}
