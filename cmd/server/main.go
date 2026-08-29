@@ -62,7 +62,8 @@ func main() {
 
 	urlRepo := repository.NewURLRepository(db, urlCache)
 	urlService := service.NewURLService(urlRepo)
-	urlHandler := handler.NewURLHandler(urlService)
+	analyticService := service.NewAnalyticsService(urlRepo, 100, 3)
+	urlHandler := handler.NewURLHandler(urlService, analyticService)
 
 	jwtConfig := &config.JWT{}
 	authService := service.NewAuthService(jwtConfig)

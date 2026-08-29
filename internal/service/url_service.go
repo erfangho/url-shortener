@@ -66,16 +66,14 @@ func (s *URLService) GetURL(shortCode string) (*model.URL, error) {
 	return s.repo.FindByShortCode(shortCode)
 }
 
-func (s *URLService) Redirect(shortCode string) (string, error) {
+func (s *URLService) Redirect(shortCode string) (*model.URL, error) {
 	url, err := s.repo.FindByShortCode(shortCode)
 
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	go s.repo.IncrementClickCount(shortCode)
-
-	return url.OriginalURL, nil
+	return url, nil
 }
 
 func (s *URLService) GetAllURLs(page, perPage int) ([]model.URL, int64, int, error) {

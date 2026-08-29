@@ -12,12 +12,14 @@ import (
 )
 
 type URLHandler struct {
-	service *service.URLService
+	service          *service.URLService
+	analyticsService *service.AnalyticsService
 }
 
-func NewURLHandler(service *service.URLService) *URLHandler {
+func NewURLHandler(service *service.URLService, analyticsService *service.AnalyticsService) *URLHandler {
 	return &URLHandler{
-		service: service,
+		service:          service,
+		analyticsService: analyticsService,
 	}
 }
 
@@ -138,7 +140,15 @@ func (h *URLHandler) Redirect(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(http.StatusMovedPermanently, result)
+	clickEvent := model.ClickEvent{
+		URLID:     result.ID,
+		UserAgent: c.GetHeader("User-Agent"),
+		IPAddress: c.ClientIP(),
+	}
+
+	h.analyticsService.Publish(clickEvent)
+
+	c.Redirect(http.StatusMovedPermanently, result.OriginalURL)
 }
 
 // GetAllURLs godoc
