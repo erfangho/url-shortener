@@ -58,6 +58,7 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 	}
 
 	result, err := h.service.CreateUser(
+		c.Request.Context(),
 		req.Name,
 		req.Username,
 		req.Password,

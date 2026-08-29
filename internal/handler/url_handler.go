@@ -47,7 +47,7 @@ func (h *URLHandler) CreateURL(c *gin.Context) {
 		return
 	}
 
-	result, err := h.service.CreateURL(req.URL)
+	result, err := h.service.CreateURL(c.Request.Context(), req.URL)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -82,7 +82,7 @@ func (h *URLHandler) GetURL(c *gin.Context) {
 		return
 	}
 
-	result, err := h.service.GetURL(shortCode)
+	result, err := h.service.GetURL(c.Request.Context(), shortCode)
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -123,7 +123,7 @@ func (h *URLHandler) Redirect(c *gin.Context) {
 		return
 	}
 
-	result, err := h.service.Redirect(shortCode)
+	result, err := h.service.Redirect(c.Request.Context(), shortCode)
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -179,7 +179,7 @@ func (h *URLHandler) GetAllURLs(c *gin.Context) {
 		return
 	}
 
-	urls, total, totalPages, err := h.service.GetAllURLs(page, perPage)
+	urls, total, totalPages, err := h.service.GetAllURLs(c.Request.Context(), page, perPage)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{

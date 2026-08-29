@@ -51,7 +51,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		return
 	}
 
-	user, err := h.userService.FindByUserName(req.Username)
+	user, err := h.userService.FindByUserName(c.Request.Context(), req.Username)
 
 	if err != nil {
 		if errors.Is(err, service.ErrUserNotFound) {

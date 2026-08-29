@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"context"
+
 	"github.com/erfangho/url-shortener/internal/model"
 	"gorm.io/gorm"
 )
@@ -15,16 +17,16 @@ func NewUserRepository(db *gorm.DB) *UserRepository {
 	}
 }
 
-func (r *UserRepository) Create(user *model.User) error {
-	result := r.db.Create(user)
+func (r *UserRepository) Create(ctx context.Context, user *model.User) error {
+	result := r.db.WithContext(ctx).Create(user)
 
 	return result.Error
 }
 
-func (r *UserRepository) FindByUserName(username string) (*model.User, error) {
+func (r *UserRepository) FindByUserName(ctx context.Context, username string) (*model.User, error) {
 	var user *model.User
 
-	err := r.db.Where("username = ?", username).First(&user).Error
+	err := r.db.WithContext(ctx).Where("username = ?", username).First(&user).Error
 
 	if err != nil {
 		return nil, err
@@ -33,19 +35,19 @@ func (r *UserRepository) FindByUserName(username string) (*model.User, error) {
 	return user, nil
 }
 
-func (r *UserRepository) FindAll(page, limit int) ([]model.User, int64, error) {
+func (r *UserRepository) FindAll(ctx context.Context, page, limit int) ([]model.User, int64, error) {
 	offset := (page - 1) * limit
 
 	var users []model.User
 	var total int64
 
-	result := r.db.Order("created_at DESC").Offset(offset).Limit(limit).Find(&users)
+	result := r.db.WithContext(ctx).Order("created_at DESC").Offset(offset).Limit(limit).Find(&users)
 
 	if result.Error != nil {
 		return nil, 0, result.Error
 	}
 
-	count := r.db.Model(&model.User{}).Count(&total)
+	count := r.db.WithContext(ctx).Model(&model.User{}).Count(&total)
 
 	if count.Error != nil {
 		return nil, 0, count.Error

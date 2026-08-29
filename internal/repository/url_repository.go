@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"context"
 	"errors"
 
 	"github.com/erfangho/url-shortener/internal/model"
@@ -20,20 +21,20 @@ func NewURLRepository(db *gorm.DB, cache *cache.Cache) *URLRepository {
 	}
 }
 
-func (r *URLRepository) Create(url *model.URL) error {
-	result := r.db.Create(url)
+func (r *URLRepository) Create(ctx context.Context, url *model.URL) error {
+	result := r.db.WithContext(ctx).Create(url)
 
 	return result.Error
 }
 
-func (r *URLRepository) FindByShortCode(shortCode string) (*model.URL, error) {
+func (r *URLRepository) FindByShortCode(ctx context.Context, shortCode string) (*model.URL, error) {
 	cacheValue, exists := r.cache.Get(shortCode)
 
 	if exists {
 		url, ok := cacheValue.(*model.URL)
 
 		if !ok {
-			return nil, errors.New("cache reterive failed")
+			return nil, errors.New("cache retrieve failed")
 		}
 
 		return url, nil
@@ -41,7 +42,7 @@ func (r *URLRepository) FindByShortCode(shortCode string) (*model.URL, error) {
 
 	var url model.URL
 
-	result := r.db.First(&url, "short_code = ?", shortCode)
+	result := r.db.WithContext(ctx).First(&url, "short_code = ?", shortCode)
 
 	if result.Error != nil {
 		return nil, result.Error
@@ -52,10 +53,10 @@ func (r *URLRepository) FindByShortCode(shortCode string) (*model.URL, error) {
 	return &url, nil
 }
 
-func (r *URLRepository) FindByOriginalURL(originalUrl string) (*model.URL, error) {
+func (r *URLRepository) FindByOriginalURL(ctx context.Context, originalUrl string) (*model.URL, error) {
 	var url model.URL
 
-	result := r.db.First(&url, "original_url = ?", originalUrl)
+	result := r.db.WithContext(ctx).First(&url, "original_url = ?", originalUrl)
 
 	if result.Error != nil {
 		return nil, result.Error
@@ -64,27 +65,27 @@ func (r *URLRepository) FindByOriginalURL(originalUrl string) (*model.URL, error
 	return &url, nil
 }
 
-func (r *URLRepository) IncrementClickCount(shortCode string) error {
-	result := r.db.Model(&model.URL{}).
+func (r *URLRepository) IncrementClickCount(ctx context.Context, shortCode string) error {
+	result := r.db.WithContext(ctx).Model(&model.URL{}).
 		Where("short_code = ?", shortCode).
 		UpdateColumn("click_count", gorm.Expr("click_count + ?", 1))
 
 	return result.Error
 }
 
-func (r *URLRepository) FindAll(page, limit int) ([]model.URL, int64, error) {
+func (r *URLRepository) FindAll(ctx context.Context, page, limit int) ([]model.URL, int64, error) {
 	offset := (page - 1) * limit
 
 	var urls []model.URL
 	var total int64
 
-	result := r.db.Order("created_at DESC").Offset(offset).Limit(limit).Find(&urls)
+	result := r.db.WithContext(ctx).Order("created_at DESC").Offset(offset).Limit(limit).Find(&urls)
 
 	if result.Error != nil {
 		return nil, 0, result.Error
 	}
 
-	count := r.db.Model(&model.URL{}).Count(&total)
+	count := r.db.WithContext(ctx).Model(&model.URL{}).Count(&total)
 
 	if count.Error != nil {
 		return nil, 0, count.Error

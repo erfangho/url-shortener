@@ -14,9 +14,9 @@ import (
 var ErrUserNotFound = errors.New("user not found")
 
 type UserRepositoryInterface interface {
-	Create(user *model.User) error
-	FindByUserName(username string) (*model.User, error)
-	FindAll(page, limit int) ([]model.User, int64, error)
+	Create(ctx context.Context, user *model.User) error
+	FindByUserName(ctx context.Context, username string) (*model.User, error)
+	FindAll(ctx context.Context, page, limit int) ([]model.User, int64, error)
 }
 
 type UserService struct {
@@ -31,7 +31,7 @@ func NewUserService(repo UserRepositoryInterface, redisCache *cache.RedisCache) 
 	}
 }
 
-func (s *UserService) CreateUser(name, username, password string) (*model.User, error) {
+func (s *UserService) CreateUser(ctx context.Context, name, username, password string) (*model.User, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword(
 		[]byte(password),
 		bcrypt.DefaultCost,
@@ -47,7 +47,7 @@ func (s *UserService) CreateUser(name, username, password string) (*model.User, 
 		Password: string(hashedPassword),
 	}
 
-	err = s.repo.Create(user)
+	err = s.repo.Create(ctx, user)
 
 	if err != nil {
 		return nil, err
@@ -56,8 +56,8 @@ func (s *UserService) CreateUser(name, username, password string) (*model.User, 
 	return user, nil
 }
 
-func (s *UserService) FindByUserName(username string) (*model.User, error) {
-	user, err := s.repo.FindByUserName(username)
+func (s *UserService) FindByUserName(ctx context.Context, username string) (*model.User, error) {
+	user, err := s.repo.FindByUserName(ctx, username)
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -100,7 +100,7 @@ func (s *UserService) GetAllUsers(ctx context.Context, page, perPage int) ([]mod
 		return cached.Users, cached.Total, cached.TotalPages, nil
 	}
 
-	users, total, err := s.repo.FindAll(page, perPage)
+	users, total, err := s.repo.FindAll(ctx, page, perPage)
 	if err != nil {
 		return nil, 0, 0, err
 	}
