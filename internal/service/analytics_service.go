@@ -3,6 +3,7 @@ package service
 import (
 	"log/slog"
 	"sync"
+	"time"
 
 	"github.com/erfangho/url-shortener/internal/model"
 )
@@ -37,17 +38,19 @@ func (s *AnalyticsService) worker() {
 
 	batch := []model.ClickEvent{}
 
+	ticker := time.NewTicker(3 * time.Second)
+	defer ticker.Stop()
+
 	for {
-		event, ok := <-s.eventChan
+		select {
+		case event, ok := <-s.eventChan:
+			if !ok {
+				s.flush(batch)
+				return
+			}
 
-		if !ok {
-			s.flush(batch)
-			return
-		}
-
-		batch = append(batch, event)
-
-		if len(batch) >= 2 {
+			batch = append(batch, event)
+		case <-ticker.C:
 			s.flush(batch)
 			batch = []model.ClickEvent{}
 		}

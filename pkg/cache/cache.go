@@ -55,7 +55,6 @@ func (c *Cache) Get(key string) (any, bool) {
 	}
 
 	if cache.ExpiresAt.Before(time.Now()) {
-		delete(c.items, key)
 		return nil, false
 	}
 
