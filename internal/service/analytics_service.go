@@ -47,7 +47,7 @@ func (s *AnalyticsService) worker() {
 
 		batch = append(batch, event)
 
-		if len(batch) >= 10 {
+		if len(batch) >= 2 {
 			s.flush(batch)
 			batch = []model.ClickEvent{}
 		}
