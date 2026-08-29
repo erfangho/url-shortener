@@ -1,9 +1,11 @@
 package main
 
 import (
+	"context"
 	"log/slog"
 	"net/http"
 	"os"
+	"os/signal"
 	"time"
 
 	"github.com/erfangho/url-shortener/internal/config"
@@ -86,8 +88,15 @@ func main() {
 		})
 	})
 
-	err = r.Run()
-	if err != nil {
-		return
-	}
+	go func() {
+		if err := r.Run(); err != nil {
+			slog.Error("server error", "error", err)
+		}
+	}()
+
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer stop()
+	<-ctx.Done()
+
+	analyticService.Close()
 }

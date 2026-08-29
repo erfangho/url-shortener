@@ -70,3 +70,8 @@ func (s *AnalyticsService) flush(events []model.ClickEvent) {
 	}
 	return
 }
+
+func (s *AnalyticsService) Close() {
+	close(s.eventChan)
+	s.wg.Wait()
+}
