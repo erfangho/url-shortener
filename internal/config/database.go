@@ -16,6 +16,7 @@ func InitDB() (*gorm.DB, error) {
 	err = db.AutoMigrate(
 		&model.URL{},
 		&model.User{},
+		&model.ClickEvent{},
 	)
 
 	if err != nil {

@@ -42,3 +42,6 @@ dist/
 build/
 
 *.log
+
+.air.toml
+/tmp/main
