@@ -1,5 +1,7 @@
 FROM golang:1.27-alpine AS builder
 
+RUN apk --no-cache add gcc musl-dev
+
 WORKDIR /app
 
 COPY go.mod go.sum ./
@@ -8,11 +10,11 @@ RUN go mod download
 
 COPY . .
 
-RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o server ./cmd/server
+RUN CGO_ENABLED=1 GOOS=linux go build -ldflags="-s -w" -o server ./cmd/server
 
 FROM alpine:3.20
 
-RUN apk --no-cache add ca-certificates
+RUN apk --no-cache add ca-certificates musl
 
 WORKDIR /app
 

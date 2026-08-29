@@ -1,0 +1,34 @@
+services:
+  url-shortener:
+    build: .
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    environment:
+      - ANALYTICS_ADDR=url-shortener-analytics:50051
+      - REDIS_ADDR=redis:6379
+    depends_on:
+      redis:
+        condition: service_healthy
+      url-shortener-analytics:
+        condition: service_started
+    restart: unless-stopped
+
+  url-shortener-analytics:
+    build: ../url-shortener-analytics
+    ports:
+      - "50051:50051"
+    restart: unless-stopped
+
+  redis:
+    image: redis:8-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+

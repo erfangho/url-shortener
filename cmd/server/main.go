@@ -55,7 +55,11 @@ func main() {
 		panic(err)
 	}
 
-	analyticsClient, err := grpcclient.NewAnalyticsClient("localhost:50051")
+	analyticsAddr := os.Getenv("ANALYTICS_ADDR")
+	if analyticsAddr == "" {
+		analyticsAddr = "localhost:50051"
+	}
+	analyticsClient, err := grpcclient.NewAnalyticsClient(analyticsAddr)
 
 	if err != nil {
 		slog.Error("failed to connect to analytics server", "error", err)

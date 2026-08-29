@@ -45,3 +45,4 @@ build/
 
 .air.toml
 /tmp/main
+server
