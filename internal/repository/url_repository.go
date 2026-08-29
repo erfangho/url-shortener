@@ -92,3 +92,32 @@ func (r *URLRepository) FindAll(page, limit int) ([]model.URL, int64, error) {
 
 	return urls, total, nil
 }
+
+func (r *URLRepository) SaveClickEventsBatch(events []model.ClickEvent) error {
+	err := r.db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Create(&events).Error; err != nil {
+			return err
+		}
+
+		counts := make(map[uint]int)
+		for _, clickEvent := range events {
+			counts[clickEvent.URLID]++
+		}
+
+		for urlID, clickCount := range counts {
+			if err := tx.Model(&model.URL{}).
+				Where("id = ?", urlID).
+				UpdateColumn("click_count", gorm.Expr("click_count + ?", clickCount)).Error; err != nil {
+				return err
+			}
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
