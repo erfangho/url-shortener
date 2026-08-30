@@ -12,6 +12,7 @@ func RegisterRoutes(
 	userHandler *handler.UserHandler,
 	authHandler *handler.AuthHandler,
 	authMiddleware *middleware.AuthMiddleware,
+	rateLimiter *middleware.RateLimiter,
 ) {
 	router.POST("/login", authHandler.Login)
 
@@ -19,7 +20,7 @@ func RegisterRoutes(
 	{
 		urlGroup.GET("", authMiddleware.AuthMiddleware(), urlHandler.GetAllURLs)
 		urlGroup.POST("", urlHandler.CreateURL)
-		urlGroup.GET("/:shortCode", urlHandler.GetURL)
+		urlGroup.GET("/:shortCode", rateLimiter.RateLimit(), urlHandler.GetURL)
 	}
 	router.GET("/u/:shortCode", urlHandler.Redirect)
 

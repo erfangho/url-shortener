@@ -91,7 +91,9 @@ func main() {
 
 	authHandler := handler.NewAuthHandler(authService, userService)
 
-	routes.RegisterRoutes(r, urlHandler, userHandler, authHandler, authMiddleware)
+	rateLimiter := middleware.NewRateLimiter(10, 20)
+
+	routes.RegisterRoutes(r, urlHandler, userHandler, authHandler, authMiddleware, rateLimiter)
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
