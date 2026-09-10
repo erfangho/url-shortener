@@ -7,6 +7,7 @@ import (
 )
 
 func InitDB() (*gorm.DB, error) {
+	// not need c compiler
 	db, err := gorm.Open(sqlite.Open("url_shortener.db"), &gorm.Config{})
 
 	if err != nil {
