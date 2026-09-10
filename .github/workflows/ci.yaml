@@ -25,7 +25,14 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
-      - run: go run github.com/swaggo/swag/cmd/swag@v1.16.6 init -g cmd/server/main.go --parseInternal --parseDependency
+      - uses: actions/cache@v4
+        id: swag-cache
+        with:
+          path: /home/runner/go/bin/swag
+          key: swag-${{ runner.os }}-v1.16.6
+      - if: steps.swag-cache.outputs.cache-hit != 'true'
+        run: go install github.com/swaggo/swag/cmd/swag@v1.16.6
+      - run: swag init -g cmd/server/main.go --parseInternal --parseDependency
       - run: go build ./...
 
   test:
@@ -35,5 +42,12 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
-      - run: go run github.com/swaggo/swag/cmd/swag@v1.16.6 init -g cmd/server/main.go --parseInternal --parseDependency
+      - uses: actions/cache@v4
+        id: swag-cache
+        with:
+          path: /home/runner/go/bin/swag
+          key: swag-${{ runner.os }}-v1.16.6
+      - if: steps.swag-cache.outputs.cache-hit != 'true'
+        run: go install github.com/swaggo/swag/cmd/swag@v1.16.6
+      - run: swag init -g cmd/server/main.go --parseInternal --parseDependency
       - run: go test -race ./...
