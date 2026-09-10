@@ -26,4 +26,4 @@ jobs:
     steps:
       - run: echo "Hello from GitHub Actions"
       - run: echo "Go version:$GO_VERSION"
-      - run: uname -s -r --m
+      - run: uname -s -r -m
