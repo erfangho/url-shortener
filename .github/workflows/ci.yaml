@@ -1,5 +1,13 @@
 name: CI
 on:
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      debug:
+        type: boolean
+        description: 'Enable debug logging'
+        default: false
   push:
     branches:
       - main
@@ -7,6 +15,7 @@ on:
     types:
       - opened
       - synchronize
+      - reopened
 
 env:
   GO_VERSION: '1.27'
@@ -17,3 +26,4 @@ jobs:
     steps:
       - run: echo "Hello from GitHub Actions"
       - run: echo "Go version:$GO_VERSION"
+      - run: echo "debug flag = ${{ inputs.debug }}"
