@@ -30,7 +30,7 @@ import (
 // @host localhost:8080
 // @BasePath /
 func main() {
-	logFile, err := os.OpenFile(
+	logFile, err := oos.OpenFile(
 		"app.log",
 		os.O_CREATE|os.O_WRONLY|os.O_APPEND,
 		0666,
