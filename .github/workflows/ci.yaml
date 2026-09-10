@@ -17,9 +17,6 @@ on:
       - synchronize
       - reopened
 
-env:
-  GO_VERSION: '1.27'
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -28,8 +25,4 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
-      - run: go version
-      - run: git log --oneline -3
-      - run: echo "Hello from GitHub Actions"
-      - run: echo "Go version:$GO_VERSION"
-      - run: echo "debug flag = ${{ inputs.debug }}"
+      - run: go build ./...
