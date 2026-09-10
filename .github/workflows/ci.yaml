@@ -22,8 +22,8 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - run: echo "Hello from GitHub Actions"
       - run: echo "Go version:$GO_VERSION"
-      - run: echo "debug flag = ${{ inputs.debug }}"
+      - run: uname -s -r --m
