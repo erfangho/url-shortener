@@ -22,8 +22,10 @@ env:
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+      - run: git log --oneline -3
       - run: echo "Hello from GitHub Actions"
       - run: echo "Go version:$GO_VERSION"
-      - run: uname -s -r -m
+      - run: echo "debug flag = ${{ inputs.debug }}"
