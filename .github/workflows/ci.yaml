@@ -43,6 +43,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         go-version: ['1.27', '1.26.4', '1.25']
+        experimental: [false]
         include:
           - os: ubuntu-latest
             go-version: '1.99' #test failure
