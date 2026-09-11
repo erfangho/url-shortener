@@ -9,6 +9,8 @@ RUN --mount=type=cache,target=/go/pkg/mod \
 
 COPY . .
 
+RUN go run github.com/swaggo/swag/cmd/swag@v1.16.6 init -g cmd/server/main.go --parseInternal --parseDependency
+
 RUN --mount=type=cache,target=/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \
     CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o server ./cmd/server
