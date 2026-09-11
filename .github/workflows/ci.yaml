@@ -78,6 +78,7 @@ jobs:
           fi
           
   docker:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -92,4 +93,6 @@ jobs:
       - uses: docker/build-push-action@v6
         with:
           push: true
-          tags: ghcr.io/${{ github.repository }}:latest
+          tags: |
+            ghcr.io/${{ github.repository }}:latest
+            ghcr.io/${{ github.repository }}:${{ github.sha }}
