@@ -17,9 +17,14 @@ on:
       - synchronize
       - reopened
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -38,6 +43,7 @@ jobs:
   test:
     continue-on-error: ${{ matrix.experimental }}
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
@@ -65,6 +71,7 @@ jobs:
     needs: [ build, test ]
     if: always()
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - run: |
           if [[ "${{ needs.build.result }}" != "success" ]] || \
@@ -76,6 +83,7 @@ jobs:
   docker:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       contents: read
       packages: write
