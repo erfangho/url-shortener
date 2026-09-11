@@ -68,7 +68,7 @@ jobs:
   ci:
     needs: [ build, test ]
     if: always()
-    runs-on: ubuntu-latestno
+    runs-on: ubuntu-latest
     steps:
       - run: |
           if [[ "${{ needs.build.result }}" != "success" ]] || \
