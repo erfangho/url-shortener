@@ -68,7 +68,7 @@ jobs:
   ci:
     needs: [ build, test ]
     if: always()
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latestno
     steps:
       - run: |
           if [[ "${{ needs.build.result }}" != "success" ]] || \
@@ -76,3 +76,11 @@ jobs:
             echo "CI gate failed"
             exit 1
           fi
+          
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/build-push-action@v6
+        with:
+          push: false
