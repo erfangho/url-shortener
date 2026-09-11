@@ -41,8 +41,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
-        go-version: ['1.27', '1.26.4', '1.25']
+        os: [ ubuntu-latest ]
+        go-version: [ '1.27', '1.26.4', '1.25' ]
+        experimental: [ false ]
         include:
           - os: ubuntu-latest
             go-version: '1.99' #test failure
@@ -63,3 +64,15 @@ jobs:
         run: go install github.com/swaggo/swag/cmd/swag@v1.16.6
       - run: swag init -g cmd/server/main.go --parseInternal --parseDependency
       - run: go test -race ./...
+
+  ci:
+    needs: [ build, test ]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          if [[ "${{ needs.build.result }}" != "success" ]] || \
+             [[ "${{ needs.test.result }}" != "success" ]]; then
+            echo "CI gate failed"
+            exit 1
+          fi
