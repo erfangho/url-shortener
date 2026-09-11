@@ -100,4 +100,4 @@ jobs:
           script: |
             docker pull ghcr.io/erfangho/url-shortener:${{ github.sha }}
             docker rm -f url-shortener || true
-            docker run -d --name url-shortener -p 80:8080 ghcr.io/erfangho/url-shortener:${{ github.sha }}
+            docker run -d --name url-shortener -p 80:8080 -e REDIS_ADDR=redis:6379 ghcr.io/erfangho/url-shortener:${{ github.sha }}
